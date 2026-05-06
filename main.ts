@@ -7,6 +7,7 @@ import {
   Notice,
   Editor,
   MarkdownView,
+  requestUrl,
 } from "obsidian";
 import {
   ViewPlugin,
@@ -184,7 +185,8 @@ async function analyzeWithOllama(
 ): Promise<OllamaSuggestion[]> {
   const prompt = buildPrompt(text, settings.targetLevel);
 
-  const response = await fetch(`${settings.ollamaEndpoint}/api/generate`, {
+  const response = await requestUrl({
+    url: `${settings.ollamaEndpoint}/api/generate`,
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -195,11 +197,11 @@ async function analyzeWithOllama(
     }),
   });
 
-  if (!response.ok) {
+  if (response.status !== 200) {
     throw new Error(`Ollama responded with ${response.status}`);
   }
 
-  const data = await response.json();
+  const data = response.json;
   return parseSuggestions(data.response ?? "", text);
 }
 
@@ -298,7 +300,7 @@ export default class EnglishWriteCheckerPlugin extends Plugin {
       id: "analyze-selection",
       name: "Analyze selected text",
       editorCallback: (editor: Editor, view: MarkdownView) => {
-        this.analyzeSelection(editor, view);
+        void this.analyzeSelection(editor, view);
       },
     });
 

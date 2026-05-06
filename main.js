@@ -130,7 +130,8 @@ var suggestionsViewPlugin = import_view.ViewPlugin.fromClass(
 async function analyzeWithOllama(text, settings) {
   var _a;
   const prompt = buildPrompt(text, settings.targetLevel);
-  const response = await fetch(`${settings.ollamaEndpoint}/api/generate`, {
+  const response = await (0, import_obsidian.requestUrl)({
+    url: `${settings.ollamaEndpoint}/api/generate`,
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -140,10 +141,10 @@ async function analyzeWithOllama(text, settings) {
       format: "json"
     })
   });
-  if (!response.ok) {
+  if (response.status !== 200) {
     throw new Error(`Ollama responded with ${response.status}`);
   }
-  const data = await response.json();
+  const data = response.json;
   return parseSuggestions((_a = data.response) != null ? _a : "", text);
 }
 function buildPrompt(text, level) {
@@ -219,7 +220,7 @@ var EnglishWriteCheckerPlugin = class extends import_obsidian.Plugin {
       id: "analyze-selection",
       name: "Analyze selected text",
       editorCallback: (editor, view) => {
-        this.analyzeSelection(editor, view);
+        void this.analyzeSelection(editor, view);
       }
     });
     this.addCommand({
