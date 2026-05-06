@@ -1,0 +1,32 @@
+/* Underlines */
+.ewc-underline--error {
+  text-decoration: underline wavy #e05252;
+  text-underline-offset: 3px;
+}
+
+.ewc-underline--style {
+  text-decoration: underline wavy #5b9bd5;
+  text-underline-offset: 3px;
+}
+
+/* Inline suggestion chips */
+.ewc-suggestion {
+  font-size: 0.82em;
+  font-style: italic;
+  border-radius: 3px;
+  padding: 0 4px;
+  margin-left: 2px;
+  opacity: 0.75;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.ewc-suggestion--error {
+  color: #e05252;
+  background-color: rgba(224, 82, 82, 0.08);
+}
+
+.ewc-suggestion--style {
+  color: #5b9bd5;
+  background-color: rgba(91, 155, 213, 0.08);
+}
