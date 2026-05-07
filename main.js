@@ -308,7 +308,7 @@ var EnglishWriteCheckerSettingTab = class extends import_obsidian.PluginSettingT
       })
     );
     new import_obsidian.Setting(containerEl).setName("Target level").setDesc("Writing proficiency level for suggestions (B2, C1, or C2)").addDropdown(
-      (drop) => drop.addOption("B2", "B2 \u2014 upper intermediate").addOption("C1", "C1 \u2014 advanced").addOption("C2", "C2 \u2014 proficient").setValue(this.plugin.settings.targetLevel).onChange(async (value) => {
+      (drop) => drop.addOption("B2", "B2 \u2014 Upper intermediate").addOption("C1", "C1 \u2014 Advanced").addOption("C2", "C2 \u2014 Proficient").setValue(this.plugin.settings.targetLevel).onChange(async (value) => {
         this.plugin.settings.targetLevel = value;
         await this.plugin.saveSettings();
       })
