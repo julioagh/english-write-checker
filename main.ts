@@ -121,6 +121,7 @@ function buildDecorations(
 ): DecorationSet {
   const decorations: Range<Decoration>[] = [];
   const docLength = view.state.doc.length;
+  const usedWidgetPositions = new Set<number>();
 
   for (const s of suggestions) {
     const from = s.offset;
@@ -131,16 +132,19 @@ function buildDecorations(
     decorations.push(
       Decoration.mark({
         class: `ewc-underline ewc-underline--${s.type}`,
-        attributes: { title: s.message },
       }).range(from, to)
     );
 
-    decorations.push(
-      Decoration.widget({
-        widget: new SuggestionWidget(s.message, s.suggestion, s.type, s.offset, s.length, view),
-        side: 1,
-      }).range(to)
-    );
+    // Skip widget if another suggestion already placed one at this position
+    if (!usedWidgetPositions.has(to)) {
+      usedWidgetPositions.add(to);
+      decorations.push(
+        Decoration.widget({
+          widget: new SuggestionWidget(s.message, s.suggestion, s.type, s.offset, s.length, view),
+          side: 1,
+        }).range(to)
+      );
+    }
   }
 
   decorations.sort((a, b) => a.from - b.from);
@@ -323,7 +327,7 @@ export default class EnglishWriteCheckerPlugin extends Plugin {
 
     const selectedText = editor.getSelection();
     if (!selectedText || selectedText.trim().length < 10) {
-      new Notice("Select at least a sentence to analyze.");
+      new Notice("Select at least a sentence to analyze");
       return;
     }
 
@@ -348,10 +352,10 @@ export default class EnglishWriteCheckerPlugin extends Plugin {
       });
 
       if (suggestions.length === 0) {
-        new Notice("No issues found. Your writing looks good!");
+        new Notice("No issues found. Your writing looks good");
       } else {
         new Notice(
-          `Found ${suggestions.length} suggestion${suggestions.length > 1 ? "s" : ""}.`
+          `Found ${suggestions.length} suggestion${suggestions.length > 1 ? "s" : ""}`
         );
       }
     } catch (err) {
@@ -410,7 +414,7 @@ class EnglishWriteCheckerSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("Model")
-      .setDesc("Ollama model to use (e.g. gemma3:4b, gemma3:12b)")
+      .setDesc("Ollama model to use, e.g. gemma3:4b or gemma3:12b")
       .addText((text) =>
         text
           .setPlaceholder("gemma3:4b")
@@ -423,7 +427,7 @@ class EnglishWriteCheckerSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("Target level")
-      .setDesc("Writing proficiency level for suggestions")
+      .setDesc("Writing proficiency level for suggestions (B2, C1, or C2)")
       .addDropdown((drop) =>
         drop
           .addOption("B2", "B2 — Upper intermediate")

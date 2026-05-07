@@ -86,6 +86,7 @@ var SuggestionWidget = class extends import_view.WidgetType {
 function buildDecorations(suggestions, view) {
   const decorations = [];
   const docLength = view.state.doc.length;
+  const usedWidgetPositions = /* @__PURE__ */ new Set();
   for (const s of suggestions) {
     const from = s.offset;
     const to = s.offset + s.length;
@@ -93,16 +94,18 @@ function buildDecorations(suggestions, view) {
       continue;
     decorations.push(
       import_view.Decoration.mark({
-        class: `ewc-underline ewc-underline--${s.type}`,
-        attributes: { title: s.message }
+        class: `ewc-underline ewc-underline--${s.type}`
       }).range(from, to)
     );
-    decorations.push(
-      import_view.Decoration.widget({
-        widget: new SuggestionWidget(s.message, s.suggestion, s.type, s.offset, s.length, view),
-        side: 1
-      }).range(to)
-    );
+    if (!usedWidgetPositions.has(to)) {
+      usedWidgetPositions.add(to);
+      decorations.push(
+        import_view.Decoration.widget({
+          widget: new SuggestionWidget(s.message, s.suggestion, s.type, s.offset, s.length, view),
+          side: 1
+        }).range(to)
+      );
+    }
   }
   decorations.sort((a, b) => a.from - b.from);
   return import_view.Decoration.set(decorations);
@@ -239,7 +242,7 @@ var EnglishWriteCheckerPlugin = class extends import_obsidian.Plugin {
     }
     const selectedText = editor.getSelection();
     if (!selectedText || selectedText.trim().length < 10) {
-      new import_obsidian.Notice("Select at least a sentence to analyze.");
+      new import_obsidian.Notice("Select at least a sentence to analyze");
       return;
     }
     this.analyzing = true;
@@ -257,10 +260,10 @@ var EnglishWriteCheckerPlugin = class extends import_obsidian.Plugin {
         effects: setSuggestionsEffect.of(remapped)
       });
       if (suggestions.length === 0) {
-        new import_obsidian.Notice("No issues found. Your writing looks good!");
+        new import_obsidian.Notice("No issues found. Your writing looks good");
       } else {
         new import_obsidian.Notice(
-          `Found ${suggestions.length} suggestion${suggestions.length > 1 ? "s" : ""}.`
+          `Found ${suggestions.length} suggestion${suggestions.length > 1 ? "s" : ""}`
         );
       }
     } catch (err) {
@@ -298,13 +301,13 @@ var EnglishWriteCheckerSettingTab = class extends import_obsidian.PluginSettingT
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Model").setDesc("Ollama model to use (e.g. gemma3:4b, gemma3:12b)").addText(
+    new import_obsidian.Setting(containerEl).setName("Model").setDesc("Ollama model to use, e.g. gemma3:4b or gemma3:12b").addText(
       (text) => text.setPlaceholder("gemma3:4b").setValue(this.plugin.settings.ollamaModel).onChange(async (value) => {
         this.plugin.settings.ollamaModel = value.trim();
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Target level").setDesc("Writing proficiency level for suggestions").addDropdown(
+    new import_obsidian.Setting(containerEl).setName("Target level").setDesc("Writing proficiency level for suggestions (B2, C1, or C2)").addDropdown(
       (drop) => drop.addOption("B2", "B2 \u2014 Upper intermediate").addOption("C1", "C1 \u2014 Advanced").addOption("C2", "C2 \u2014 Proficient").setValue(this.plugin.settings.targetLevel).onChange(async (value) => {
         this.plugin.settings.targetLevel = value;
         await this.plugin.saveSettings();
