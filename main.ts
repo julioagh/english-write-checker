@@ -430,9 +430,9 @@ class EnglishWriteCheckerSettingTab extends PluginSettingTab {
       .setDesc("Writing proficiency level for suggestions (B2, C1, or C2)")
       .addDropdown((drop) =>
         drop
-          .addOption("B2", "B2 — Upper intermediate")
-          .addOption("C1", "C1 — Advanced")
-          .addOption("C2", "C2 — Proficient")
+          .addOption("B2", "B2 — upper intermediate")
+          .addOption("C1", "C1 — advanced")
+          .addOption("C2", "C2 — proficient")
           .setValue(this.plugin.settings.targetLevel)
           .onChange(async (value) => {
             this.plugin.settings.targetLevel = value as "B2" | "C1" | "C2";
