@@ -321,7 +321,7 @@ export default class EnglishWriteCheckerPlugin extends Plugin {
 
   private async analyzeSelection(editor: Editor, view: MarkdownView) {
     if (this.analyzing) {
-      new Notice("Already analyzing, please wait…");
+      new Notice("Already analyzing, please wait");
       return;
     }
 
@@ -332,7 +332,7 @@ export default class EnglishWriteCheckerPlugin extends Plugin {
     }
 
     this.analyzing = true;
-    const notice = new Notice("Analyzing with Ollama…", 0);
+    const notice = new Notice("Analyzing with Ollama", 0);
 
     try {
       const suggestions = await analyzeWithOllama(selectedText, this.settings);
@@ -413,7 +413,7 @@ class EnglishWriteCheckerSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Model")
+      .setName("Ollama model")
       .setDesc("Ollama model to use, e.g. gemma3:4b or gemma3:12b")
       .addText((text) =>
         text
@@ -430,9 +430,9 @@ class EnglishWriteCheckerSettingTab extends PluginSettingTab {
       .setDesc("Writing proficiency level for suggestions (B2, C1, or C2)")
       .addDropdown((drop) =>
         drop
-          .addOption("B2", "B2 — Upper intermediate")
-          .addOption("C1", "C1 — Advanced")
-          .addOption("C2", "C2 — Proficient")
+          .addOption("B2", "B2 — upper intermediate")
+          .addOption("C1", "C1 — advanced")
+          .addOption("C2", "C2 — proficient")
           .setValue(this.plugin.settings.targetLevel)
           .onChange(async (value) => {
             this.plugin.settings.targetLevel = value as "B2" | "C1" | "C2";

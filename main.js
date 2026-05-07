@@ -237,7 +237,7 @@ var EnglishWriteCheckerPlugin = class extends import_obsidian.Plugin {
   }
   async analyzeSelection(editor, view) {
     if (this.analyzing) {
-      new import_obsidian.Notice("Already analyzing, please wait\u2026");
+      new import_obsidian.Notice("Already analyzing, please wait");
       return;
     }
     const selectedText = editor.getSelection();
@@ -246,7 +246,7 @@ var EnglishWriteCheckerPlugin = class extends import_obsidian.Plugin {
       return;
     }
     this.analyzing = true;
-    const notice = new import_obsidian.Notice("Analyzing with Ollama\u2026", 0);
+    const notice = new import_obsidian.Notice("Analyzing with Ollama", 0);
     try {
       const suggestions = await analyzeWithOllama(selectedText, this.settings);
       const selectionStart = editor.getCursor("from");
@@ -301,14 +301,14 @@ var EnglishWriteCheckerSettingTab = class extends import_obsidian.PluginSettingT
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Model").setDesc("Ollama model to use, e.g. gemma3:4b or gemma3:12b").addText(
+    new import_obsidian.Setting(containerEl).setName("Ollama model").setDesc("Ollama model to use, e.g. gemma3:4b or gemma3:12b").addText(
       (text) => text.setPlaceholder("gemma3:4b").setValue(this.plugin.settings.ollamaModel).onChange(async (value) => {
         this.plugin.settings.ollamaModel = value.trim();
         await this.plugin.saveSettings();
       })
     );
     new import_obsidian.Setting(containerEl).setName("Target level").setDesc("Writing proficiency level for suggestions (B2, C1, or C2)").addDropdown(
-      (drop) => drop.addOption("B2", "B2 \u2014 Upper intermediate").addOption("C1", "C1 \u2014 Advanced").addOption("C2", "C2 \u2014 Proficient").setValue(this.plugin.settings.targetLevel).onChange(async (value) => {
+      (drop) => drop.addOption("B2", "B2 \u2014 upper intermediate").addOption("C1", "C1 \u2014 advanced").addOption("C2", "C2 \u2014 proficient").setValue(this.plugin.settings.targetLevel).onChange(async (value) => {
         this.plugin.settings.targetLevel = value;
         await this.plugin.saveSettings();
       })
