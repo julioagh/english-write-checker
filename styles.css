@@ -1,11 +1,15 @@
 /* Underlines */
 .ewc-underline--error {
-  text-decoration: underline wavy #e05252;
+  text-decoration-line: underline;
+  text-decoration-style: wavy;
+  text-decoration-color: #e05252;
   text-underline-offset: 3px;
 }
 
 .ewc-underline--style {
-  text-decoration: underline wavy #5b9bd5;
+  text-decoration-line: underline;
+  text-decoration-style: wavy;
+  text-decoration-color: #5b9bd5;
   text-underline-offset: 3px;
 }
 
@@ -14,7 +18,7 @@
   font-size: 0.82em;
   font-style: italic;
   border-radius: 3px;
-  padding: 0 4px;
+  padding: 3px 4px;
   margin-left: 2px;
   opacity: 0.75;
   pointer-events: auto;
