@@ -5,7 +5,6 @@ import {
   App,
   Setting,
   Notice,
-  Editor,
   MarkdownView,
   requestUrl,
 } from "obsidian";
@@ -36,6 +35,21 @@ interface PluginSettings {
   ollamaEndpoint: string;
   ollamaModel: string;
   targetLevel: "B2" | "C1" | "C2";
+}
+
+interface OllamaResponse {
+  response: string;
+}
+
+interface ParsedSuggestions {
+  suggestions?: unknown[];
+}
+
+interface RawSuggestion {
+  original: string;
+  message: string;
+  suggestion: string;
+  type: string;
 }
 
 const DEFAULT_SETTINGS: PluginSettings = {
@@ -87,8 +101,7 @@ class SuggestionWidget extends WidgetType {
   }
 
   toDOM(): HTMLElement {
-    const el = document.createElement("span");
-    el.className = `ewc-suggestion ewc-suggestion--${this.type}`;
+    const el = createSpan({ cls: `ewc-suggestion ewc-suggestion--${this.type}` });
     el.setAttribute("aria-label", `${this.message} → ${this.suggestion}`);
     el.textContent = ` ✦ ${this.suggestion}`;
     el.addEventListener("click", (e) => {
@@ -205,7 +218,7 @@ async function analyzeWithOllama(
     throw new Error(`Ollama responded with ${response.status}`);
   }
 
-  const data = response.json;
+  const data = response.json as OllamaResponse;
   return parseSuggestions(data.response ?? "", text);
 }
 
@@ -233,18 +246,18 @@ function parseSuggestions(
   raw: string,
   originalText: string
 ): OllamaSuggestion[] {
-  let parsed: { suggestions?: unknown[] };
+  let parsed: ParsedSuggestions;
 
   try {
     // Strip markdown code fences if model wraps in ```json ... ```
     const cleaned = raw.replace(/^```json\s*/i, "").replace(/```\s*$/, "").trim();
-    parsed = JSON.parse(cleaned);
+    parsed = JSON.parse(cleaned) as ParsedSuggestions;
   } catch {
     // Try to extract JSON object from within a longer string
     const match = raw.match(/\{[\s\S]*\}/);
     if (!match) return [];
     try {
-      parsed = JSON.parse(match[0]);
+      parsed = JSON.parse(match[0]) as ParsedSuggestions;
     } catch {
       return [];
     }
@@ -258,14 +271,14 @@ function parseSuggestions(
     if (
       typeof item !== "object" ||
       item === null ||
-      typeof (item as Record<string, unknown>).original !== "string" ||
-      typeof (item as Record<string, unknown>).suggestion !== "string" ||
-      typeof (item as Record<string, unknown>).message !== "string"
+      typeof (item as RawSuggestion).original !== "string" ||
+      typeof (item as RawSuggestion).suggestion !== "string" ||
+      typeof (item as RawSuggestion).message !== "string"
     ) {
       continue;
     }
 
-    const s = item as Record<string, string>;
+    const s = item as RawSuggestion;
     let offset = originalText.indexOf(s.original);
     if (offset === -1) continue;
 
@@ -303,15 +316,15 @@ export default class EnglishWriteCheckerPlugin extends Plugin {
     this.addCommand({
       id: "analyze-selection",
       name: "Analyze selected text",
-      editorCallback: (editor: Editor, view: MarkdownView) => {
-        void this.analyzeSelection(editor, view);
+      editorCallback: (_editor, view: MarkdownView) => {
+        void this.analyzeSelection(view);
       },
     });
 
     this.addCommand({
       id: "clear-suggestions",
       name: "Clear all suggestions",
-      editorCallback: (editor: Editor, view: MarkdownView) => {
+      editorCallback: (_editor, view: MarkdownView) => {
         this.clearSuggestions(view);
       },
     });
@@ -319,12 +332,13 @@ export default class EnglishWriteCheckerPlugin extends Plugin {
     this.addSettingTab(new EnglishWriteCheckerSettingTab(this.app, this));
   }
 
-  private async analyzeSelection(editor: Editor, view: MarkdownView) {
+  private async analyzeSelection(view: MarkdownView) {
     if (this.analyzing) {
       new Notice("Already analyzing, please wait");
       return;
     }
 
+    const editor = view.editor;
     const selectedText = editor.getSelection();
     if (!selectedText || selectedText.trim().length < 10) {
       new Notice("Select at least a sentence to analyze");

@@ -61,8 +61,7 @@ var SuggestionWidget = class extends import_view.WidgetType {
     this.view = view;
   }
   toDOM() {
-    const el = document.createElement("span");
-    el.className = `ewc-suggestion ewc-suggestion--${this.type}`;
+    const el = createSpan({ cls: `ewc-suggestion ewc-suggestion--${this.type}` });
     el.setAttribute("aria-label", `${this.message} \u2192 ${this.suggestion}`);
     el.textContent = ` \u2726 ${this.suggestion}`;
     el.addEventListener("click", (e) => {
@@ -222,24 +221,25 @@ var EnglishWriteCheckerPlugin = class extends import_obsidian.Plugin {
     this.addCommand({
       id: "analyze-selection",
       name: "Analyze selected text",
-      editorCallback: (editor, view) => {
-        void this.analyzeSelection(editor, view);
+      editorCallback: (_editor, view) => {
+        void this.analyzeSelection(view);
       }
     });
     this.addCommand({
       id: "clear-suggestions",
       name: "Clear all suggestions",
-      editorCallback: (editor, view) => {
+      editorCallback: (_editor, view) => {
         this.clearSuggestions(view);
       }
     });
     this.addSettingTab(new EnglishWriteCheckerSettingTab(this.app, this));
   }
-  async analyzeSelection(editor, view) {
+  async analyzeSelection(view) {
     if (this.analyzing) {
       new import_obsidian.Notice("Already analyzing, please wait");
       return;
     }
+    const editor = view.editor;
     const selectedText = editor.getSelection();
     if (!selectedText || selectedText.trim().length < 10) {
       new import_obsidian.Notice("Select at least a sentence to analyze");
