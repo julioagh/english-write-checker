@@ -1,6 +1,6 @@
 {
   "name": "english-write-checker",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Obsidian plugin for real-time English writing improvement powered by local LLM (Ollama)",
   "main": "main.js",
   "scripts": {
@@ -20,7 +20,6 @@
     "@types/node": "^16.11.6",
     "@typescript-eslint/eslint-plugin": "^5.29.0",
     "@typescript-eslint/parser": "^5.29.0",
-    "builtin-modules": "3.3.0",
     "esbuild": "0.17.3",
     "eslint": "^8.57.1",
     "eslint-plugin-obsidianmd": "github:obsidianmd/eslint-plugin",
