@@ -14,13 +14,13 @@ An [Obsidian](https://obsidian.md) plugin that analyzes your English writing in 
 ## Screenshots
 
 ### Suggestions displayed inline
-![Inline suggestions](assets/CleanShot%202026-05-06%20at%2014.25.40.png)
+![Inline suggestions](assets/inline-suggestions.png)
 
 ### Hover to see the explanation
-![Hover tooltip](assets/CleanShot%202026-05-06%20at%2014.26.11.png)
+![Hover tooltip](assets/hover-tooltip.png)
 
 ### Click to accept a suggestion
-![Accept suggestion](assets/CleanShot%202026-05-06%20at%2014.26.38.png)
+![Accept suggestion](assets/accept-suggestion.png)
 
 ## Requirements
 
