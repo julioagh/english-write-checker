@@ -1,6 +1,6 @@
 {
   "name": "english-write-checker",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Obsidian plugin for real-time English writing improvement powered by local LLM (Ollama)",
   "main": "main.js",
   "scripts": {
