@@ -27,19 +27,18 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Attest main.js
+      - name: Attest build artifacts
         uses: actions/attest-build-provenance@v1
         with:
-          subject-path: main.js
-
-      - name: Attest manifest.json
-        uses: actions/attest-build-provenance@v1
-        with:
-          subject-path: manifest.json
+          subject-path: |
+            main.js
+            manifest.json
+            styles.css
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
+          generate_release_notes: true
           files: |
             main.js
             manifest.json
